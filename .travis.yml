@@ -4,14 +4,14 @@ sudo: required
 services:
  - docker
 
-env:
- - DOCKER_COMPOSE_VERSION=1.15.0
-
 before_install:
  - sudo rm /usr/local/bin/docker-compose
- - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+ - curl -L https://github.com/docker/compose/releases/download/1.15.0/docker-compose-`uname -s`-`uname -m` > docker-compose
  - chmod +x docker-compose
  - sudo mv docker-compose /usr/local/bin
+
+install:
+  - pip install tox
 
 matrix:
   include:
@@ -20,13 +20,13 @@ matrix:
       - TOX_ENV=py27
    - python: '3.4'
      env:
-      - TOX_ENV=py35
+      - TOX_ENV=py34
    - python: '3.5'
      env:
       - TOX_ENV=py35
    - python: '3.6'
      env:
-      - TOX_ENV=py35
+      - TOX_ENV=py36
    - env:
       - TOX_ENV=lint
 
