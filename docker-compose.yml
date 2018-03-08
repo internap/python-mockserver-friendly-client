@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+ mockServer:
+   image: jamesdbloom/mockserver:latest
+
+   ports:
+   - 1080:1080
+
+   environment:
+   - LOG_LEVEL=WARN
