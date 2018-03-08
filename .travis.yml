@@ -1,0 +1,43 @@
+language: python
+sudo: required
+
+services:
+ - docker
+
+env:
+ - DOCKER_COMPOSE_VERSION=1.15.0
+
+before_install:
+ - sudo rm /usr/local/bin/docker-compose
+ - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+ - chmod +x docker-compose
+ - sudo mv docker-compose /usr/local/bin
+
+matrix:
+  include:
+   - python: '2.7'
+     env:
+      - TOX_ENV=py27
+   - python: '3.4'
+     env:
+      - TOX_ENV=py35
+   - python: '3.5'
+     env:
+      - TOX_ENV=py35
+   - python: '3.6'
+     env:
+      - TOX_ENV=py35
+   - env:
+      - TOX_ENV=lint
+
+script:
+ - tox -e $TOX_ENV
+
+deploy:
+  provider: pypi
+  user: internaphosting
+  on:
+    tags: true
+    python: 3.6
+  password:
+    secure: oBFAXwt/Ocohb4Jkn447zNOaKbwW/3wrBNRGiYlZ+XadqDYE777XVQMDTIegNDNWwHcucO+ja7OaLF3lUVKsPLQphO/GqumU+Pz4EdvckMBKpfPokzefCT/vPiHKRLzjJ3TDH8elR4kvbn0a0rAoCSQPOUtkMynQGgh/xSb3W15AikS7PFWyvSxgGncnTQddJcZ9aakG57NvWeGZ3b1FlyJfTGe+mY/++HODjSYuw4eMvWJM1XFC4DESHqmXD2pDDQbUUI8Q+9UFhtKzOTitSLzn+16jK4wElOcPoN/f2VVl7tfmHW1EYnduEoKjPVbGRFMZSCLKtyP47nCFP3hxfsyep4gU67A01FGZlXKwIqH03RhCr8xgl6/S5Y6J7XphEpiKTBMFfpxyMd45EnWy5GUFrD3XtLi715ugYcUFNrRNgcUduXkMvuYV6/czF+Gu6CJVVbVqiunkRGN17vhuRqAeXeFbwat7XofsEIZ+skRzmzzry+yjP3HxeR9NINhKkQ41PJ8Mnbr0eK8MwZcpFMXim0S74VHDnUZ+6a1hG/S+Wa3Yi96NpIRJsJPCtblHNyHFdx6j92rRr8+BlrLn5o7zQJisYL5EnTobjc692bwJ7y1jm0jiXyrYxcnSgUKhwjKZkZXkXS0/JW+J41pjeQsGLMJgQ+k3cT0YXU6jnLM=
