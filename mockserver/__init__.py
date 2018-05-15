@@ -46,11 +46,12 @@ def request(method=None, path=None, querystring=None, body=None, headers=None):
     )
 
 
-def response(code=None, body=None, headers=None):
+def response(code=None, body=None, headers=None, delay=None):
     return _non_null_options_to_json(
         _Option("statusCode", code),
         _Option("body", body),
-        _Option("headers", headers, formatter=_to_named_values_list)
+        _Option("headers", headers, formatter=_to_named_values_list),
+        _Option("delay", delay, formatter=_to_delay)
     )
 
 
@@ -63,10 +64,10 @@ def form(form):
     return collections.OrderedDict((("type", "PARAMETERS"), ("parameters", _to_named_values_list(form))))
 
 
-def json_response(code=None, body=None, headers=None):
+def json_response(body=None, headers=None, **kwargs):
     headers = (headers or {})
     headers["Content-Type"] = "application/json"
-    return response(code, json.dumps(body), headers)
+    return response(body=json.dumps(body), headers=headers, **kwargs)
 
 
 class _Option:
@@ -90,9 +91,53 @@ class _Timing:
         return {"exact": True, "count": self.count}
 
 
+class _Delay:
+    def __init__(self, unit, value):
+        self.unit = unit
+        self.value = value
+
+
+def seconds(value):
+    return _Delay("SECONDS", value)
+
+
+def milliseconds(value):
+    return _Delay("MILLISECONDS", value)
+
+
+def microseconds(value):
+    return _Delay("MICROSECONDS", value)
+
+
+def nanoseconds(value):
+    return _Delay("NANOSECONDS", value)
+
+
+def minutes(value):
+    return _Delay("MINUTES", value)
+
+
+def hours(value):
+    return _Delay("HOURS", value)
+
+
+def days(value):
+    return _Delay("DAYS", value)
+
+
 def _non_null_options_to_json(*options):
     return {o.field: o.formatter(o.value) for o in options if o.value is not None}
 
 
 def _to_named_values_list(dictionary):
     return [{"name": key, "values": [value]} for key, value in dictionary.items()]
+
+
+def _to_delay(delay):
+    if (not isinstance(delay, _Delay)):
+        delay = seconds(delay)
+
+    return {
+        "timeUnit": delay.unit,
+        "value": delay.value
+    }

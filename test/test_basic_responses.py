@@ -1,5 +1,7 @@
+import time
+
 import requests
-from mockserver import request, response
+from mockserver import request, response, milliseconds
 from test import MOCK_SERVER_URL, MockServerClientTestCase
 
 
@@ -30,3 +32,25 @@ class TestBasicResponses(MockServerClientTestCase):
 
         result = requests.get(MOCK_SERVER_URL)
         self.assertEqual(result.headers["i-like"], "i-like")
+
+    def test_delay_response(self):
+        self.client.stub(
+            request(),
+            response(delay=1)
+        )
+
+        start = time.time()
+        requests.get(MOCK_SERVER_URL)
+        elapsed = time.time() - start
+        self.assertGreater(elapsed, 1)
+
+    def test_delay_response_with_special_unit(self):
+        self.client.stub(
+            request(),
+            response(delay=milliseconds(500))
+        )
+
+        start = time.time()
+        requests.get(MOCK_SERVER_URL)
+        elapsed = time.time() - start
+        self.assertGreater(elapsed, 0.5)
