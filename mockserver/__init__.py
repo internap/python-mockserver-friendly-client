@@ -64,6 +64,17 @@ def form(form):
     return collections.OrderedDict((("type", "PARAMETERS"), ("parameters", _to_named_values_list(form))))
 
 
+def json_equals(payload):
+    """Expects that the request payload is equal to the given payload."""
+    return collections.OrderedDict((("type", "JSON"), ("json", json.dumps(payload)), ("matchType", "STRICT")))
+
+
+def json_contains(payload):
+    """Expects the request payload to match all given fields. The request may has more fields."""
+    return collections.OrderedDict(
+        (("type", "JSON"), ("json", json.dumps(payload)), ("matchType", "ONLY_MATCHING_FIELDS")))
+
+
 def json_response(body=None, headers=None, **kwargs):
     headers = (headers or {})
     headers["Content-Type"] = "application/json"

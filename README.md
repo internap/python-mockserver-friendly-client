@@ -133,6 +133,35 @@ client.stub(
 
 This automatically dumps the body in json and appends the `application/json` Content-Type to the headers.
 
+### Expecting JSON request
+
+```
+from mockserver import MockServerClient, request, json_equals
+
+client = MockServerClient("http://localhost:1080")
+client.expect(
+    request(body=json_equals({"key": "value"})),
+    response(),
+    times(1)
+)
+```
+
+This only matches requests with the provided json body. Json conversation is done automatically.
+If you only want to match parts of a given JSON you can provide only the matching parts using `json_contains`:
+
+```
+from mockserver import MockServerClient, request, json_contains
+
+client = MockServerClient("http://localhost:1080")
+client.expect(
+    request(body=json_contains({"key": "value"})),
+    response(),
+    times(1)
+)
+```
+I.e. this will match `{"key": "value"}` or `{"key": "value", "another": "key"}`
+
+
 ## More documentation
 
 There is currently no official documentation, however you can consider the tests as a type of documentation, they are
