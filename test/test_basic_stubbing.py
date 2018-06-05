@@ -73,6 +73,18 @@ class TestBasicStubbing(MockServerClientTestCase):
         result = requests.get(MOCK_SERVER_URL, headers={"i-am-special": "yeah you are"})
         self.assertEqual(result.status_code, 200)
 
+    def test_cookies_stubbing(self):
+        self.client.stub(
+            request(cookies={"i-am-cookie": "sweet-cookie"}),
+            response(code=200)
+        )
+
+        result = requests.get(MOCK_SERVER_URL)
+        self.assertEqual(result.status_code, 404)
+
+        result = requests.get(MOCK_SERVER_URL, cookies={"i-am-cookie": "sweet-cookie"})
+        self.assertEqual(result.status_code, 200)
+
     def test_count_stubbing(self):
         self.client.stub(
             request(),

@@ -33,6 +33,15 @@ class TestBasicResponses(MockServerClientTestCase):
         result = requests.get(MOCK_SERVER_URL)
         self.assertEqual(result.headers["i-like"], "i-like")
 
+    def test_cookies_response(self):
+        self.client.stub(
+            request(),
+            response(cookies={"i-am-cookie": "sweet-cookie"})
+        )
+
+        result = requests.get(MOCK_SERVER_URL)
+        self.assertEqual(result.cookies["i-am-cookie"], "sweet-cookie")
+
     def test_delay_response(self):
         self.client.stub(
             request(),
