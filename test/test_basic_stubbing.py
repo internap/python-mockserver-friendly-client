@@ -1,5 +1,6 @@
+import time
 import requests
-from mockserver import request, response, times
+from mockserver import request, response, times, time_to_live, seconds
 from test import MOCK_SERVER_URL, MockServerClientTestCase
 
 
@@ -109,3 +110,15 @@ class TestBasicStubbing(MockServerClientTestCase):
 
         result = requests.get(MOCK_SERVER_URL + "/path")
         self.assertEqual(result.status_code, 200)
+
+    def test_time_to_live_stubbing(self):
+        self.client.stub(
+            request(),
+            response(),
+            time_to_live=time_to_live(seconds(1))
+        )
+        result = requests.get(MOCK_SERVER_URL + "/path")
+        self.assertEqual(result.status_code, 200)
+        time.sleep(1)
+        result = requests.get(MOCK_SERVER_URL + "/path")
+        self.assertEqual(result.status_code, 404)

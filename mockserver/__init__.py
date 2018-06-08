@@ -15,19 +15,20 @@ class MockServerClient:
         self.expectations = []
         self._call("reset")
 
-    def stub(self, request, response, timing=None):
+    def stub(self, request, response, timing=None, time_to_live=None):
         self._call("expectation", json.dumps({
             "httpRequest": request,
             "httpResponse": response,
-            "times": (timing or _Timing()).for_expectation()
+            "times": (timing or _Timing()).for_expectation(),
+            "timeToLive": (time_to_live or _Timing()).for_expectation()
         }))
 
-    def expect(self, request, response, timing):
-        self.stub(request, response, timing)
-        self.expectations.append((request, timing))
+    def expect(self, request, response, timing, time_to_live=None):
+        self.stub(request, response, timing, time_to_live)
+        self.expectations.append((request, timing, time_to_live))
 
     def verify(self):
-        for req, timing in self.expectations:
+        for req, timing, ttl in self.expectations:
             result = self._call("verify", json.dumps({
                 "httpRequest": req,
                 "times": timing.for_verification()
@@ -60,6 +61,12 @@ def times(count):
     return _Timing(count)
 
 
+def time_to_live(time):
+    if not isinstance(time, _Time):
+        time = seconds(time)
+    return _Timing(ttl=time)
+
+
 def form(form):
     # NOTE(lindycoder): Support for mockservers version before https://github.com/jamesdbloom/mockserver/issues/371
     return collections.OrderedDict((("type", "PARAMETERS"), ("parameters", _to_named_values_list(form))))
@@ -90,12 +97,15 @@ class _Option:
 
 
 class _Timing:
-    def __init__(self, count=None):
+    def __init__(self, count=None, ttl=None):
         self.count = count
+        self.ttl = ttl
 
     def for_expectation(self):
         if self.count:
             return {"remainingTimes": self.count, "unlimited": False}
+        elif self.ttl:
+            return {"timeToLive": self.ttl.value, "timeUnit": self.ttl.unit, "unlimited": False}
         else:
             return {"unlimited": True}
 
@@ -103,38 +113,38 @@ class _Timing:
         return {"exact": True, "count": self.count}
 
 
-class _Delay:
+class _Time:
     def __init__(self, unit, value):
         self.unit = unit
         self.value = value
 
 
 def seconds(value):
-    return _Delay("SECONDS", value)
+    return _Time("SECONDS", value)
 
 
 def milliseconds(value):
-    return _Delay("MILLISECONDS", value)
+    return _Time("MILLISECONDS", value)
 
 
 def microseconds(value):
-    return _Delay("MICROSECONDS", value)
+    return _Time("MICROSECONDS", value)
 
 
 def nanoseconds(value):
-    return _Delay("NANOSECONDS", value)
+    return _Time("NANOSECONDS", value)
 
 
 def minutes(value):
-    return _Delay("MINUTES", value)
+    return _Time("MINUTES", value)
 
 
 def hours(value):
-    return _Delay("HOURS", value)
+    return _Time("HOURS", value)
 
 
 def days(value):
-    return _Delay("DAYS", value)
+    return _Time("DAYS", value)
 
 
 def _non_null_options_to_json(*options):
@@ -146,7 +156,7 @@ def _to_named_values_list(dictionary):
 
 
 def _to_delay(delay):
-    if (not isinstance(delay, _Delay)):
+    if (not isinstance(delay, _Time)):
         delay = seconds(delay)
 
     return {
