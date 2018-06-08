@@ -16,19 +16,19 @@ class MockServerClient:
         self._call("reset")
 
     def stub(self, request, response, timing=None, time_to_live=None):
-        self._call("expectation", json.dumps({
-            "httpRequest": request,
-            "httpResponse": response,
-            "times": (timing or _Timing()).for_expectation(),
-            "timeToLive": (time_to_live or _Timing()).for_expectation()
-        }))
+        self._call("expectation", json.dumps(_non_null_options_to_dict(
+            _Option("httpRequest", request),
+            _Option("httpResponse", response),
+            _Option("times", (timing or _Timing()).for_expectation()),
+            _Option("timeToLive", time_to_live, formatter=_to_time_to_live)
+        )))
 
     def expect(self, request, response, timing, time_to_live=None):
         self.stub(request, response, timing, time_to_live)
-        self.expectations.append((request, timing, time_to_live))
+        self.expectations.append((request, timing))
 
     def verify(self):
-        for req, timing, ttl in self.expectations:
+        for req, timing in self.expectations:
             result = self._call("verify", json.dumps({
                 "httpRequest": req,
                 "times": timing.for_verification()
@@ -37,7 +37,7 @@ class MockServerClient:
 
 
 def request(method=None, path=None, querystring=None, body=None, headers=None, cookies=None):
-    return _non_null_options_to_json(
+    return _non_null_options_to_dict(
         _Option("method", method),
         _Option("path", path),
         _Option("queryStringParameters", querystring, formatter=_to_named_values_list),
@@ -48,7 +48,7 @@ def request(method=None, path=None, querystring=None, body=None, headers=None, c
 
 
 def response(code=None, body=None, headers=None, cookies=None, delay=None):
-    return _non_null_options_to_json(
+    return _non_null_options_to_dict(
         _Option("statusCode", code),
         _Option("body", body),
         _Option("headers", headers, formatter=_to_named_values_list),
@@ -59,12 +59,6 @@ def response(code=None, body=None, headers=None, cookies=None, delay=None):
 
 def times(count):
     return _Timing(count)
-
-
-def time_to_live(time):
-    if not isinstance(time, _Time):
-        time = seconds(time)
-    return _Timing(ttl=time)
 
 
 def form(form):
@@ -97,15 +91,12 @@ class _Option:
 
 
 class _Timing:
-    def __init__(self, count=None, ttl=None):
+    def __init__(self, count=None):
         self.count = count
-        self.ttl = ttl
 
     def for_expectation(self):
         if self.count:
             return {"remainingTimes": self.count, "unlimited": False}
-        elif self.ttl:
-            return {"timeToLive": self.ttl.value, "timeUnit": self.ttl.unit, "unlimited": False}
         else:
             return {"unlimited": True}
 
@@ -147,7 +138,7 @@ def days(value):
     return _Time("DAYS", value)
 
 
-def _non_null_options_to_json(*options):
+def _non_null_options_to_dict(*options):
     return {o.field: o.formatter(o.value) for o in options if o.value is not None}
 
 
@@ -155,11 +146,24 @@ def _to_named_values_list(dictionary):
     return [{"name": key, "values": [value]} for key, value in dictionary.items()]
 
 
-def _to_delay(delay):
-    if (not isinstance(delay, _Time)):
-        delay = seconds(delay)
+def _to_time(value):
+    if not isinstance(value, _Time):
+        value = seconds(value)
+    return value
 
+
+def _to_delay(delay):
+    delay = _to_time(delay)
     return {
         "timeUnit": delay.unit,
         "value": delay.value
+    }
+
+
+def _to_time_to_live(time):
+    time = _to_time(time)
+    return {
+        "timeToLive": time.value,
+        "timeUnit": time.unit,
+        "unlimited": False
     }

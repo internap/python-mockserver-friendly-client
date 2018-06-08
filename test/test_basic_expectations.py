@@ -1,5 +1,5 @@
 import requests
-from mockserver import request, response, times
+from mockserver import request, response, times, seconds
 from test import MOCK_SERVER_URL, MockServerClientTestCase
 
 
@@ -45,3 +45,13 @@ class TestBasicExpectations(MockServerClientTestCase):
 
         self.client.reset()
         self.client.verify()
+
+    def test_expect_with_ttl(self):
+        self.client.expect(
+            request(),
+            response(),
+            times(1),
+            seconds(10)
+        )
+        result = requests.get(MOCK_SERVER_URL + "/path")
+        self.assertEqual(result.status_code, 200)
