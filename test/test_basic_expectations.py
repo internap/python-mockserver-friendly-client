@@ -12,7 +12,7 @@ class TestBasicExpectations(MockServerClientTestCase):
         )
 
         with self.assertRaises(AssertionError):
-            self.client.verify()
+            self.client.verify_expectations()
 
     def test_expect_once_called_twice_fails(self):
         self.client.expect(
@@ -34,7 +34,7 @@ class TestBasicExpectations(MockServerClientTestCase):
             times(0)
         )
 
-        self.client.verify()
+        self.client.verify_expectations()
 
     def test_reset_should_clear_expectations(self):
         self.client.expect(
@@ -44,7 +44,7 @@ class TestBasicExpectations(MockServerClientTestCase):
         )
 
         self.client.reset()
-        self.client.verify()
+        self.client.verify_expectations()
 
     def test_expect_with_ttl(self):
         self.client.expect(

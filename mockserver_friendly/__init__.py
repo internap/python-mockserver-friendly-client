@@ -28,13 +28,16 @@ class MockServerFriendlyClient(object):
         self.stub(request, response, timing, time_to_live)
         self.expectations.append((request, timing))
 
-    def verify(self):
+    def verify(self, request, timing=1):
+        result = self._call("verify", json.dumps({
+            "httpRequest": request,
+            "times": timing.for_verification()
+        }))
+        assert result.status_code == 202, result.content.decode("UTF-8").replace("\n", "\r\n")
+
+    def verify_expectations(self):
         for req, timing in self.expectations:
-            result = self._call("verify", json.dumps({
-                "httpRequest": req,
-                "times": timing.for_verification()
-            }))
-            assert result.status_code == 202, result.content.decode('UTF-8').replace('\n', '\r\n')
+            self.verify(req, timing)
 
 
 def request(method=None, path=None, querystring=None, body=None, headers=None, cookies=None):
