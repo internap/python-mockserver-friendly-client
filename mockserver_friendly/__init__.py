@@ -28,7 +28,7 @@ class MockServerFriendlyClient(object):
         self.stub(request, response, timing, time_to_live)
         self.expectations.append((request, timing))
 
-    def verify(self, request, timing=1):
+    def verify(self, request, timing):
         result = self._call("verify", json.dumps({
             "httpRequest": request,
             "times": timing.for_verification()
