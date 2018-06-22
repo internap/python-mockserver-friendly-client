@@ -66,7 +66,7 @@ client.stub(
 
 (For when calling another component *IS* what you are testing)
 
-Using the `expect` will remember the request and verify it when `verify` is called.
+Using the `expect` will remember the request and verify it when `verify_expectations` is called.
 
 ```
 import json
@@ -80,7 +80,7 @@ client.expect(
     times(1)
 )
 
-client.verify()  # AssertionError !
+client.verify_expectations()  # AssertionError !
 ```
 
 * The `times(N)` parameter is mandatory for expect
@@ -161,6 +161,18 @@ client.expect(
 ```
 I.e. this will match `{"key": "value"}` or `{"key": "value", "another": "key"}`
 
+### Verifying request
+
+```
+from mockserver import MockServerClient, request, times
+
+client = MockServerClient("http://localhost:1080")
+client.verify(
+    request(path="/some_path", querystring({"key": "value"})),
+    times(1)
+)
+```
+Verify will check request on MockServer and raise AssertionError if request not found.
 
 ## More documentation
 
@@ -182,7 +194,7 @@ class ServerMockingTestBase(...):
     def tearDown(self):
         super(ServerMockingTestBase, self).tearDown()
         
-        self.client.verify()
+        self.client.verify_expectations()
 ```
 
 # Troubleshooting
