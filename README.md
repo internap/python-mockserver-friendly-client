@@ -37,7 +37,7 @@ pip install mockserver-client
 
 You need a running MockServer running, see http://www.mock-server.com/mock_server/getting_started.html#start_mockserver
 
-This project's tests uses the docker image : https://github.com/internap/python-mockserver-client/blob/master/docker-compose.yml
+This project's tests uses the docker image : https://github.com/internap/python-mockserver-friendly-client/blob/master/docker-compose.yml
 
 ## Usage
 

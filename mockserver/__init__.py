@@ -1,10 +1,16 @@
 import collections
 import json
+import warnings
+
 import requests
 
 
 class MockServerClient(object):
     def __init__(self, base_url):
+        warnings.warn("Deprecated: This library will be replaced by the official client from "
+                      "https://github.com/jamesdbloom/mockserver-client-python and will move to "
+                      "\"mockserver-friendly-client\" at https://github.com/internap/python-mockserver-friendly-client."
+                      " We are sorry for the inconvenience!", DeprecationWarning)
         self.base_url = base_url
         self.expectations = []
 
