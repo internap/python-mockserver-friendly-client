@@ -2,7 +2,7 @@ version: '3'
 
 services:
  mock-server:
-   image: jamesdbloom/mockserver:latest
+   image: jamesdbloom/mockserver:mockserver-5.4.1
 
    ports:
     - 1080:1080

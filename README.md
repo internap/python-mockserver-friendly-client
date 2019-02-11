@@ -1,6 +1,6 @@
 # MockServer Python Client
 
-[![Build Status](https://travis-ci.org/internap/python-mockserver-client.svg?branch=master)](https://travis-ci.org/internap/python-mockserver-client)
+[![Build Status](https://travis-ci.org/internap/python-mockserver-friendly-client.svg?branch=master)](https://travis-ci.org/internap/python-mockserver-friendly-client)
 
 Python client to James D. Bloom's awesome MockServer : http://www.mock-server.com/
 
@@ -22,15 +22,15 @@ WARNING: **THIS IS A VERY EARLY VERSION THE API IS MOST LIKELY TO CHANGE**
 From source:
 
 ```
-git clone https://github.com/internap/python-mockserver-client.git
-cd python-mockserver-client
+git clone https://github.com/internap/python-mockserver-friendly-client.git
+cd python-mockserver-friendly-client
 python setup.py install
 ```
 
-From [PyPi](https://pypi.python.org/pypi/kubernetes/) directly:
+From [PyPi](https://pypi.org/) directly:
 
 ```
-pip install mockserver-client
+pip install mockserver-friendly-client
 ```
 
 ## Prerequisite
