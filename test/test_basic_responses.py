@@ -1,7 +1,7 @@
 import time
 
 import requests
-from mockserver import request, response, milliseconds
+from mockserver_friendly import request, response, milliseconds
 from test import MOCK_SERVER_URL, MockServerClientTestCase
 
 

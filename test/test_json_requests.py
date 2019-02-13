@@ -1,5 +1,5 @@
 import requests
-from mockserver import request, response, times, json_equals, json_contains
+from mockserver_friendly import request, response, times, json_equals, json_contains
 from test import MOCK_SERVER_URL, MockServerClientTestCase
 
 

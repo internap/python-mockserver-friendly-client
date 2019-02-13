@@ -2,14 +2,14 @@ import time
 import unittest
 from contextlib import contextmanager
 
-from mockserver import MockServerClient
+from mockserver_friendly import MockServerFriendlyClient
 
 MOCK_SERVER_URL = "http://localhost:1080"
 
 
 class MockServerClientTestCase(unittest.TestCase):
     def setUp(self):
-        self.client = MockServerClient(MOCK_SERVER_URL)
+        self.client = MockServerFriendlyClient(MOCK_SERVER_URL)
 
     def tearDown(self):
         with mock_server_breathing():

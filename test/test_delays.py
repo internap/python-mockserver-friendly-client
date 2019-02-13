@@ -1,6 +1,6 @@
 import unittest
 
-from mockserver import _to_delay, seconds, milliseconds, microseconds, nanoseconds, minutes, \
+from mockserver_friendly import _to_delay, seconds, milliseconds, microseconds, nanoseconds, minutes, \
     hours, days
 
 
