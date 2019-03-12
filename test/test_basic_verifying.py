@@ -1,5 +1,5 @@
 import requests
-from mockserver import request, response, times
+from mockserver_friendly import request, response, times
 from test import MOCK_SERVER_URL, MockServerClientTestCase
 
 
