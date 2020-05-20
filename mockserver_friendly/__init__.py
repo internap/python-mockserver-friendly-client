@@ -51,7 +51,7 @@ def request(method=None, path=None, querystring=None, body=None, headers=None, c
     )
 
 
-def response(code=None, reason=None, body=None, headers=None, cookies=None, delay=None):
+def response(code=None, body=None, headers=None, cookies=None, delay=None, reason=None):
     return _non_null_options_to_dict(
         _Option("statusCode", code),
         _Option("reasonPhrase", reason),
