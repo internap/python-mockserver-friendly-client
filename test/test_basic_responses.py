@@ -15,6 +15,16 @@ class TestBasicResponses(MockServerClientTestCase):
         result = requests.get(MOCK_SERVER_URL)
         self.assertEqual(result.status_code, 418)
 
+    def test_reason_phrase_response(self):
+        reason_phrase = "Custom reasonPhrase"
+        self.client.stub(
+            request(),
+            response(reason=reason_phrase)
+        )
+
+        result = requests.get(MOCK_SERVER_URL)
+        self.assertEqual(result.reason, reason_phrase)
+
     def test_body_response(self):
         self.client.stub(
             request(),
